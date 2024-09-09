@@ -22,7 +22,7 @@ type AppDetails struct {
 
 func getOS() string{
 	currentOs := runtime.GOOS
-	fmt.Println("Operating system:", currentOs)
+	fmt.Println("Operating found:", currentOs)
 	return currentOs
 }
 
@@ -31,7 +31,7 @@ func getAppName(appID int) string{
 
 	response, err := http.Get(steamURL)
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Println("Game id not found: ", err)
 		os.Exit(1)
 	}
 	defer response.Body.Close()
@@ -54,7 +54,7 @@ func getAppName(appID int) string{
 }
 
 func createFile(fileName string, content string){
-		// Creating the actual file
+	// Creating the actual file
 	
 	file, err := os.Create(fileName)
 	if err != nil {
@@ -78,7 +78,9 @@ func createFile(fileName string, content string){
 func main(){
 	var gameID int
 
-	fmt.Print("Id for game: ")
+	osType := getOS()
+
+	fmt.Print("ID for steam game: ")
 	fmt.Scan(&gameID)
 
 	if(gameID <= 0){
@@ -86,7 +88,6 @@ func main(){
 		return
 	}
 
-	osType := getOS()
 
 	// Get the user directory
 
@@ -95,18 +96,20 @@ func main(){
 		fmt.Println("Error: ", err)
 		return
 	}
-// Library/Application Support/Steam/steamapps
+
+	// Library/Application Support/Steam/steamapps
+
 	var directory string
 	if osType == "darwin" {
 		directory = filepath.Join(homeDir, "Library/Application Support/Steam/steamapps")
 	} else if osType == "linux" {
 		directory = filepath.Join(homeDir, ".steam/steam/SteamApps")
 	} else {
-		fmt.Println("OS is unsupported")
+		fmt.Println("Steam directory not found, OS may be unsupported")
 		return
 	}
 
-	fmt.Println(directory)
+	fmt.Printf("Steam directory found at: %s",directory)
 
 	gameName := getAppName(gameID)
 
